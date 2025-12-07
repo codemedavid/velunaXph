@@ -75,15 +75,19 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product, onClos
             {/* Left Column */}
             <div className="space-y-3 sm:space-y-4 md:space-y-6">
               {/* Product Image */}
-              {product.image_url && (
-                <div className="relative h-40 sm:h-48 md:h-56 lg:h-64 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg sm:rounded-xl overflow-hidden border-2 border-gold-300/30 shadow-lg">
-                  <img 
-                    src={product.image_url} 
-                    alt={product.name}
+              <div className="relative h-40 sm:h-48 md:h-56 lg:h-64 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg sm:rounded-xl overflow-hidden border-2 border-gold-300/30 shadow-lg">
+                {(selectedVariation?.image_url || product.image_url) ? (
+                  <img
+                    src={selectedVariation?.image_url || product.image_url || ''}
+                    alt={selectedVariation ? `${product.name} - ${selectedVariation.name}` : product.name}
                     className="w-full h-full object-cover"
                   />
-                </div>
-              )}
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <Package className="w-12 h-12 sm:w-16 sm:h-16 text-gray-300" />
+                  </div>
+                )}
+              </div>
 
               {/* Description */}
               <div>
@@ -129,11 +133,10 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product, onClos
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600 text-[11px] sm:text-xs md:text-sm">Stock:</span>
-                    <span className={`font-medium text-[11px] sm:text-xs md:text-sm ${
-                      (product.variations && product.variations.length > 0
+                    <span className={`font-medium text-[11px] sm:text-xs md:text-sm ${(product.variations && product.variations.length > 0
                         ? product.variations.some(v => v.stock_quantity > 0)
                         : product.stock_quantity > 0)
-                        ? 'text-gold-600' 
+                        ? 'text-gold-600'
                         : 'text-red-600'
                       }`}>
                       {product.variations && product.variations.length > 0
@@ -184,8 +187,8 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product, onClos
                       {product.variations.map((variation) => {
                         const isOutOfStock = variation.stock_quantity === 0;
                         return (
-                          <option 
-                            key={variation.id} 
+                          <option
+                            key={variation.id}
                             value={variation.id}
                             disabled={isOutOfStock}
                             className={isOutOfStock ? 'line-through text-gray-400 italic' : ''}
@@ -253,15 +256,15 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product, onClos
               {product.available && (product.variations && product.variations.length > 0
                 ? product.variations.some(v => v.stock_quantity > 0 && v.stock_quantity < 10)
                 : product.stock_quantity < 10 && product.stock_quantity > 0) && (
-                <div className="bg-gold-50 border border-gold-300 sm:border-2 rounded-lg sm:rounded-xl p-3 sm:p-4">
-                  <p className="text-xs sm:text-sm text-gold-800 font-semibold flex items-center gap-1.5 sm:gap-2">
-                    <span className="text-base sm:text-lg md:text-xl">⚠️</span>
-                    Low stock! Only {product.variations && product.variations.length > 0
-                      ? product.variations.reduce((sum, v) => sum + v.stock_quantity, 0)
-                      : product.stock_quantity} units left
-                  </p>
-                </div>
-              )}
+                  <div className="bg-gold-50 border border-gold-300 sm:border-2 rounded-lg sm:rounded-xl p-3 sm:p-4">
+                    <p className="text-xs sm:text-sm text-gold-800 font-semibold flex items-center gap-1.5 sm:gap-2">
+                      <span className="text-base sm:text-lg md:text-xl">⚠️</span>
+                      Low stock! Only {product.variations && product.variations.length > 0
+                        ? product.variations.reduce((sum, v) => sum + v.stock_quantity, 0)
+                        : product.stock_quantity} units left
+                    </p>
+                  </div>
+                )}
             </div>
           </div>
         </div>
