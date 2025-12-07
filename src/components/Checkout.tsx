@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, ShieldCheck, Package, CreditCard, Sparkles, Heart, Copy, Check, MessageCircle, Instagram, Phone } from 'lucide-react';
+import { ArrowLeft, ShieldCheck, Package, CreditCard, Sparkles, Heart, Copy, Check, MessageCircle } from 'lucide-react';
 import type { CartItem } from '../types';
 import { usePaymentMethods } from '../hooks/usePaymentMethods';
 import { supabase } from '../lib/supabase';
@@ -13,12 +13,12 @@ interface CheckoutProps {
 const Checkout: React.FC<CheckoutProps> = ({ cartItems, totalPrice, onBack }) => {
   const { paymentMethods } = usePaymentMethods();
   const [step, setStep] = useState<'details' | 'payment' | 'confirmation'>('details');
-  
+
   // Customer Details
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  
+
   // Shipping Details
   const [address, setAddress] = useState('');
   const [barangay, setBarangay] = useState('');
@@ -26,12 +26,12 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, totalPrice, onBack }) =>
   const [state, setState] = useState('');
   const [zipCode, setZipCode] = useState('');
   const [shippingLocation, setShippingLocation] = useState<'NCR' | 'LUZON' | 'VISAYAS_MINDANAO' | ''>('');
-  
+
   // Payment
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
-  const [contactMethod, setContactMethod] = useState<'instagram' | 'viber' | ''>('');
+  const [contactMethod, setContactMethod] = useState<'whatsapp' | ''>('whatsapp');
   const [notes, setNotes] = useState('');
-  
+
   // Order message for copying
   const [orderMessage, setOrderMessage] = useState<string>('');
   const [copied, setCopied] = useState(false);
@@ -50,7 +50,7 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, totalPrice, onBack }) =>
   // Calculate shipping fee based on location
   const calculateShippingFee = (): number => {
     if (!shippingLocation) return 0;
-    
+
     switch (shippingLocation) {
       case 'NCR':
         return 160;
@@ -62,11 +62,11 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, totalPrice, onBack }) =>
         return 0;
     }
   };
-  
+
   const shippingFee = calculateShippingFee();
   const finalTotal = totalPrice + shippingFee;
 
-  const isDetailsValid = 
+  const isDetailsValid =
     fullName.trim() !== '' &&
     email.trim() !== '' &&
     phone.trim() !== '' &&
@@ -86,17 +86,17 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, totalPrice, onBack }) =>
 
   const handlePlaceOrder = async () => {
     if (!contactMethod) {
-      alert('Please select your preferred contact method (Instagram or Viber).');
+      alert('Please confirm WhatsApp as your contact method.');
       return;
     }
-    
+
     if (!shippingLocation) {
       alert('Please select your shipping location.');
       return;
     }
-    
+
     const paymentMethod = paymentMethods.find(pm => pm.id === selectedPaymentMethod);
-    
+
     try {
       // Prepare order items for database
       const orderItems = cartItems.map(item => ({
@@ -139,15 +139,15 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, totalPrice, onBack }) =>
 
       if (orderError) {
         console.error('❌ Error saving order:', orderError);
-        
+
         // Provide helpful error message if table doesn't exist
         let errorMessage = orderError.message;
-        if (orderError.message?.includes('Could not find the table') || 
-            orderError.message?.includes('relation "public.orders" does not exist') ||
-            orderError.message?.includes('schema cache')) {
+        if (orderError.message?.includes('Could not find the table') ||
+          orderError.message?.includes('relation "public.orders" does not exist') ||
+          orderError.message?.includes('schema cache')) {
           errorMessage = `The orders table doesn't exist in the database. Please run the migration: supabase/migrations/20250117000000_ensure_orders_table.sql in your Supabase SQL Editor.`;
         }
-        
+
         alert(`Failed to save order: ${errorMessage}\n\nPlease contact support if this issue persists.`);
         return;
       }
@@ -166,7 +166,7 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, totalPrice, onBack }) =>
         second: '2-digit',
         hour12: true
       });
-      
+
       const orderDetails = `
 ✨ HP GLOW - NEW ORDER
 
@@ -185,14 +185,14 @@ ${city}, ${state} ${zipCode}
 
 🛒 ORDER DETAILS
 ${cartItems.map(item => {
-  let line = `• ${item.product.name}`;
-  if (item.variation) {
-    line += ` (${item.variation.name})`;
-  }
-  line += ` x${item.quantity} - ₱${(item.price * item.quantity).toLocaleString('en-PH', { minimumFractionDigits: 0 })}`;
-  line += `\n  Purity: ${item.product.purity_percentage}%`;
-  return line;
-}).join('\n\n')}
+        let line = `• ${item.product.name}`;
+        if (item.variation) {
+          line += ` (${item.variation.name})`;
+        }
+        line += ` x${item.quantity} - ₱${(item.price * item.quantity).toLocaleString('en-PH', { minimumFractionDigits: 0 })}`;
+        line += `\n  Purity: ${item.product.purity_percentage}%`;
+        return line;
+      }).join('\n\n')}
 
 💰 PRICING
 Product Total: ₱${totalPrice.toLocaleString('en-PH', { minimumFractionDigits: 0 })}
@@ -207,7 +207,7 @@ ${paymentMethod ? `Account: ${paymentMethod.account_number}` : ''}
 Please attach your payment screenshot when sending this message.
 
 📱 CONTACT METHOD
-${contactMethod === 'instagram' ? 'Instagram: https://www.instagram.com/hpglowpeptides' : contactMethod === 'viber' ? 'Viber: 09062349763' : 'Not selected'}
+WhatsApp: wa.me/639241036416
 
 📋 ORDER ID: ${orderData.id}
 
@@ -217,17 +217,13 @@ Please confirm this order. Thank you!
       // Store order message for copying
       setOrderMessage(orderDetails);
 
-      // Open contact method based on selection
-      const contactUrl = contactMethod === 'instagram' 
-        ? 'https://www.instagram.com/hpglowpeptides'
-        : contactMethod === 'viber'
-        ? 'viber://chat?number=09062349763'
-        : null;
-      
+      // Open WhatsApp with order message
+      const whatsappMessage = encodeURIComponent(orderDetails);
+      const contactUrl = `https://wa.me/639241036416?text=${whatsappMessage}`;
       if (contactUrl) {
         try {
           const contactWindow = window.open(contactUrl, '_blank');
-          
+
           if (!contactWindow || contactWindow.closed || typeof contactWindow.closed === 'undefined') {
             console.warn('⚠️ Popup blocked or contact method failed to open');
             setContactOpened(false);
@@ -244,7 +240,7 @@ Please confirm this order. Thank you!
           setContactOpened(false);
         }
       }
-      
+
       // Show confirmation
       setStep('confirmation');
     } catch (error) {
@@ -279,15 +275,9 @@ Please confirm this order. Thank you!
   };
 
   const handleOpenContact = () => {
-    const contactUrl = contactMethod === 'instagram' 
-      ? 'https://www.instagram.com/hpglowpeptides'
-      : contactMethod === 'viber'
-      ? 'viber://chat?number=09062349763'
-      : null;
-    
-    if (contactUrl) {
-      window.open(contactUrl, '_blank');
-    }
+    const whatsappMessage = encodeURIComponent(orderMessage);
+    const contactUrl = `https://wa.me/639241036416?text=${whatsappMessage}`;
+    window.open(contactUrl, '_blank');
   };
 
   if (step === 'confirmation') {
@@ -303,7 +293,7 @@ Please confirm this order. Thank you!
               <Sparkles className="w-7 h-7 text-gold-600" />
             </h1>
             <p className="text-gray-600 mb-8 text-base md:text-lg leading-relaxed">
-              Copy the order message below and send it to your preferred platform (IG/viber) along with your payment screenshot.
+              Copy the order message below and send it via WhatsApp along with your payment screenshot.
             </p>
 
             {/* Order Message Display */}
@@ -338,7 +328,7 @@ Please confirm this order. Thank you!
               {copied && (
                 <p className="text-green-600 text-sm mt-2 flex items-center gap-1">
                   <Check className="w-4 h-4" />
-                  Message copied to clipboard! Paste it in {contactMethod === 'instagram' ? 'Instagram' : 'Viber'} along with your payment screenshot.
+                  Message copied to clipboard! Paste it in WhatsApp along with your payment screenshot.
                 </p>
               )}
             </div>
@@ -347,19 +337,19 @@ Please confirm this order. Thank you!
             <div className="space-y-3 mb-8">
               <button
                 onClick={handleOpenContact}
-                className="w-full bg-gradient-to-r from-black to-gray-900 hover:from-gray-900 hover:to-black text-white py-3 md:py-4 rounded-2xl font-bold text-base md:text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all flex items-center justify-center gap-2 border border-gold-500/20"
+                className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-3 md:py-4 rounded-2xl font-bold text-base md:text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all flex items-center justify-center gap-2"
               >
-                {contactMethod === 'instagram' ? <Instagram className="w-5 h-5" /> : <Phone className="w-5 h-5" />}
-                Open {contactMethod === 'instagram' ? 'Instagram' : 'Viber'}
+                <MessageCircle className="w-5 h-5" />
+                Open WhatsApp
               </button>
-              
+
               {!contactOpened && (
                 <p className="text-sm text-gray-600">
-                  💡 If {contactMethod === 'instagram' ? 'Instagram' : 'Viber'} doesn't open, copy the message above and paste it manually
+                  💡 If WhatsApp doesn't open, copy the message above and paste it manually
                 </p>
               )}
             </div>
-            
+
             <div className="bg-gradient-to-r from-gold-50 to-gold-100/50 rounded-2xl p-6 mb-8 text-left border-2 border-gold-300/30">
               <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
                 What Happens Next?
@@ -563,33 +553,30 @@ Please confirm this order. Thank you!
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <button
                     onClick={() => setShippingLocation('NCR')}
-                    className={`p-3 rounded-lg border-2 transition-all ${
-                      shippingLocation === 'NCR'
-                        ? 'border-gold-500 bg-gold-50'
-                        : 'border-gray-200 hover:border-gold-300'
-                    }`}
+                    className={`p-3 rounded-lg border-2 transition-all ${shippingLocation === 'NCR'
+                      ? 'border-gold-500 bg-gold-50'
+                      : 'border-gray-200 hover:border-gold-300'
+                      }`}
                   >
                     <p className="font-semibold text-gray-900 text-sm">NCR</p>
                     <p className="text-xs text-gray-500">₱160</p>
                   </button>
                   <button
                     onClick={() => setShippingLocation('LUZON')}
-                    className={`p-3 rounded-lg border-2 transition-all ${
-                      shippingLocation === 'LUZON'
-                        ? 'border-gold-500 bg-gold-50'
-                        : 'border-gray-200 hover:border-gold-300'
-                    }`}
+                    className={`p-3 rounded-lg border-2 transition-all ${shippingLocation === 'LUZON'
+                      ? 'border-gold-500 bg-gold-50'
+                      : 'border-gray-200 hover:border-gold-300'
+                      }`}
                   >
                     <p className="font-semibold text-gray-900 text-sm">LUZON</p>
                     <p className="text-xs text-gray-500">₱165</p>
                   </button>
                   <button
                     onClick={() => setShippingLocation('VISAYAS_MINDANAO')}
-                    className={`p-3 rounded-lg border-2 transition-all ${
-                      shippingLocation === 'VISAYAS_MINDANAO'
-                        ? 'border-gold-500 bg-gold-50'
-                        : 'border-gray-200 hover:border-gold-300'
-                    }`}
+                    className={`p-3 rounded-lg border-2 transition-all ${shippingLocation === 'VISAYAS_MINDANAO'
+                      ? 'border-gold-500 bg-gold-50'
+                      : 'border-gray-200 hover:border-gold-300'
+                      }`}
                   >
                     <p className="font-semibold text-gray-900 text-sm">VISAYAS & MINDANAO</p>
                     <p className="text-xs text-gray-500">₱190</p>
@@ -600,11 +587,10 @@ Please confirm this order. Thank you!
               <button
                 onClick={handleProceedToPayment}
                 disabled={!isDetailsValid}
-                className={`w-full py-3 md:py-4 rounded-2xl font-bold text-base md:text-lg transition-all transform shadow-lg ${
-                  isDetailsValid
-                    ? 'bg-gradient-to-r from-black to-gray-900 hover:from-gray-900 hover:to-black text-white hover:scale-105 hover:shadow-xl border border-gold-500/20'
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                }`}
+                className={`w-full py-3 md:py-4 rounded-2xl font-bold text-base md:text-lg transition-all transform shadow-lg ${isDetailsValid
+                  ? 'bg-gradient-to-r from-black to-gray-900 hover:from-gray-900 hover:to-black text-white hover:scale-105 hover:shadow-xl border border-gold-500/20'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
               >
                 Proceed to Payment ✨
               </button>
@@ -617,7 +603,7 @@ Please confirm this order. Thank you!
                   Order Summary
                   <Sparkles className="w-5 h-5 text-gold-600" />
                 </h2>
-                
+
                 <div className="space-y-4 mb-6">
                   {cartItems.map((item, index) => (
                     <div key={index} className="pb-4 border-b border-gray-200">
@@ -705,11 +691,10 @@ Please confirm this order. Thank you!
               <div className="grid grid-cols-1 gap-3">
                 <button
                   onClick={() => setShippingLocation('NCR')}
-                  className={`p-4 rounded-lg border-2 transition-all flex items-center justify-between ${
-                    shippingLocation === 'NCR'
-                      ? 'border-gold-500 bg-gold-50'
-                      : 'border-gray-200 hover:border-gold-300'
-                  }`}
+                  className={`p-4 rounded-lg border-2 transition-all flex items-center justify-between ${shippingLocation === 'NCR'
+                    ? 'border-gold-500 bg-gold-50'
+                    : 'border-gray-200 hover:border-gold-300'
+                    }`}
                 >
                   <div className="text-left">
                     <p className="font-semibold text-gray-900">NCR</p>
@@ -723,11 +708,10 @@ Please confirm this order. Thank you!
                 </button>
                 <button
                   onClick={() => setShippingLocation('LUZON')}
-                  className={`p-4 rounded-lg border-2 transition-all flex items-center justify-between ${
-                    shippingLocation === 'LUZON'
-                      ? 'border-gold-500 bg-gold-50'
-                      : 'border-gray-200 hover:border-gold-300'
-                  }`}
+                  className={`p-4 rounded-lg border-2 transition-all flex items-center justify-between ${shippingLocation === 'LUZON'
+                    ? 'border-gold-500 bg-gold-50'
+                    : 'border-gray-200 hover:border-gold-300'
+                    }`}
                 >
                   <div className="text-left">
                     <p className="font-semibold text-gray-900">LUZON</p>
@@ -741,11 +725,10 @@ Please confirm this order. Thank you!
                 </button>
                 <button
                   onClick={() => setShippingLocation('VISAYAS_MINDANAO')}
-                  className={`p-4 rounded-lg border-2 transition-all flex items-center justify-between ${
-                    shippingLocation === 'VISAYAS_MINDANAO'
-                      ? 'border-gold-500 bg-gold-50'
-                      : 'border-gray-200 hover:border-gold-300'
-                  }`}
+                  className={`p-4 rounded-lg border-2 transition-all flex items-center justify-between ${shippingLocation === 'VISAYAS_MINDANAO'
+                    ? 'border-gold-500 bg-gold-50'
+                    : 'border-gray-200 hover:border-gold-300'
+                    }`}
                 >
                   <div className="text-left">
                     <p className="font-semibold text-gray-900">VISAYAS & MINDANAO</p>
@@ -768,17 +751,16 @@ Please confirm this order. Thank you!
                 </div>
                 Payment Method
               </h2>
-              
+
               <div className="grid grid-cols-1 gap-4 mb-6">
                 {paymentMethods.map((method) => (
                   <button
                     key={method.id}
                     onClick={() => setSelectedPaymentMethod(method.id)}
-                    className={`p-4 rounded-lg border-2 transition-all flex items-center justify-between ${
-                      selectedPaymentMethod === method.id
-                        ? 'border-gold-500 bg-gold-50'
-                        : 'border-gray-200 hover:border-gold-300'
-                    }`}
+                    className={`p-4 rounded-lg border-2 transition-all flex items-center justify-between ${selectedPaymentMethod === method.id
+                      ? 'border-gold-500 bg-gold-50'
+                      : 'border-gray-200 hover:border-gold-300'
+                      }`}
                   >
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 bg-gold-100 rounded-lg flex items-center justify-center">
@@ -806,7 +788,7 @@ Please confirm this order. Thank you!
                     <p><strong>Account Name:</strong> {paymentMethodInfo.account_name}</p>
                     <p><strong>Amount to Pay:</strong> <span className="text-xl font-bold text-gold-600">₱{finalTotal.toLocaleString('en-PH', { minimumFractionDigits: 0 })}</span></p>
                   </div>
-                  
+
                   {paymentMethodInfo.qr_code_url && (
                     <div className="flex justify-center">
                       <div className="bg-white p-4 rounded-lg">
@@ -823,56 +805,27 @@ Please confirm this order. Thank you!
               )}
             </div>
 
-            {/* Contact Method Selection */}
+            {/* Contact Method - WhatsApp Only */}
             <div className="bg-white rounded-2xl shadow-lg p-5 md:p-6 border-2 border-gold-300/30">
               <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-4 md:mb-6 flex items-center gap-2">
-                <MessageCircle className="w-5 h-5 md:w-6 md:h-6 text-gold-600" />
-                Preferred Contact Method *
+                <MessageCircle className="w-5 h-5 md:w-6 md:h-6 text-green-600" />
+                Contact Method
               </h2>
-              <div className="grid grid-cols-1 gap-3">
-                <button
-                  onClick={() => setContactMethod('instagram')}
-                  className={`p-4 rounded-lg border-2 transition-all flex items-center justify-between ${
-                    contactMethod === 'instagram'
-                      ? 'border-gold-500 bg-gold-50'
-                      : 'border-gray-200 hover:border-gold-300'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <Instagram className="w-6 h-6 text-gold-600" />
-                    <div className="text-left">
-                      <p className="font-semibold text-gray-900">Instagram</p>
-                      <p className="text-sm text-gray-500">@hpglowpeptides</p>
-                    </div>
+              <div className="p-4 rounded-lg border-2 border-green-500 bg-green-50 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <MessageCircle className="w-6 h-6 text-green-600" />
+                  <div className="text-left">
+                    <p className="font-semibold text-gray-900">WhatsApp</p>
+                    <p className="text-sm text-gray-500">+63 924 103 6416</p>
                   </div>
-                  {contactMethod === 'instagram' && (
-                    <div className="w-6 h-6 bg-gold-600 rounded-full flex items-center justify-center">
-                      <span className="text-black text-xs font-bold">✓</span>
-                    </div>
-                  )}
-                </button>
-                <button
-                  onClick={() => setContactMethod('viber')}
-                  className={`p-4 rounded-lg border-2 transition-all flex items-center justify-between ${
-                    contactMethod === 'viber'
-                      ? 'border-gold-500 bg-gold-50'
-                      : 'border-gray-200 hover:border-gold-300'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <Phone className="w-6 h-6 text-gold-600" />
-                    <div className="text-left">
-                      <p className="font-semibold text-gray-900">Viber</p>
-                      <p className="text-sm text-gray-500">09062349763</p>
-                    </div>
-                  </div>
-                  {contactMethod === 'viber' && (
-                    <div className="w-6 h-6 bg-gold-600 rounded-full flex items-center justify-center">
-                      <span className="text-black text-xs font-bold">✓</span>
-                    </div>
-                  )}
-                </button>
+                </div>
+                <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
+                  <span className="text-white text-xs font-bold">✓</span>
+                </div>
               </div>
+              <p className="text-xs text-gray-500 mt-3">
+                After checkout, you'll be redirected to WhatsApp to send your order details.
+              </p>
             </div>
 
             {/* Additional Notes */}
@@ -895,11 +848,10 @@ Please confirm this order. Thank you!
             <button
               onClick={handlePlaceOrder}
               disabled={!contactMethod || !shippingLocation}
-              className={`w-full py-3 md:py-4 rounded-2xl font-bold text-base md:text-lg shadow-lg transition-all flex items-center justify-center gap-2 ${
-                contactMethod && shippingLocation
-                  ? 'bg-gradient-to-r from-black to-gray-900 hover:from-gray-900 hover:to-black text-white hover:shadow-xl transform hover:scale-105 border border-gold-500/20'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              }`}
+              className={`w-full py-3 md:py-4 rounded-2xl font-bold text-base md:text-lg shadow-lg transition-all flex items-center justify-center gap-2 ${contactMethod && shippingLocation
+                ? 'bg-gradient-to-r from-black to-gray-900 hover:from-gray-900 hover:to-black text-white hover:shadow-xl transform hover:scale-105 border border-gold-500/20'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
             >
               <ShieldCheck className="w-5 h-5 md:w-6 md:h-6" />
               Complete Order
@@ -913,7 +865,7 @@ Please confirm this order. Thank you!
                 Final Summary
                 <Sparkles className="w-5 h-5 text-gold-600" />
               </h2>
-              
+
               {/* Customer Info */}
               <div className="bg-gray-50 rounded-lg p-4 mb-6 text-sm">
                 <p className="font-semibold text-gray-900 mb-2">{fullName}</p>
