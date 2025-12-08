@@ -159,20 +159,20 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
             )}
           </div>
 
-          <div className="flex items-center gap-2 relative z-20">
+          <div className="flex items-center gap-1.5 sm:gap-2 relative z-20">
             {/* Quantity Controls */}
-            <div className="flex items-center border border-gray-200 rounded-md">
+            <div className="flex items-center border border-gray-200 rounded-md flex-shrink-0">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   decrementQuantity();
                 }}
-                className="p-1.5 hover:bg-gray-50 transition-colors"
+                className="p-1 sm:p-1.5 hover:bg-gray-50 transition-colors"
                 disabled={!hasAnyStock}
               >
-                <Minus className="w-4 h-4 text-gray-500" />
+                <Minus className="w-3 h-3 sm:w-4 sm:h-4 text-gray-500" />
               </button>
-              <span className="w-8 text-center text-sm font-medium text-theme-text">
+              <span className="w-6 sm:w-8 text-center text-xs sm:text-sm font-medium text-theme-text">
                 {quantity}
               </span>
               <button
@@ -180,10 +180,10 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
                   e.stopPropagation();
                   incrementQuantity();
                 }}
-                className="p-1.5 hover:bg-gray-50 transition-colors"
+                className="p-1 sm:p-1.5 hover:bg-gray-50 transition-colors"
                 disabled={quantity >= availableStock || !hasAnyStock}
               >
-                <Plus className="w-4 h-4 text-gray-500" />
+                <Plus className="w-3 h-3 sm:w-4 sm:h-4 text-gray-500" />
               </button>
             </div>
 
@@ -199,9 +199,9 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
                 handleAddToCart();
               }}
               disabled={!hasAnyStock || availableStock === 0}
-              className="flex-1 bg-theme-text text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="flex-1 min-w-0 bg-theme-text text-white px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 sm:gap-2"
             >
-              <ShoppingCart className="w-4 h-4" />
+              <ShoppingCart className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
               <span>Add</span>
             </button>
           </div>

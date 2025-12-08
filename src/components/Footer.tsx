@@ -1,5 +1,5 @@
 import React from 'react';
-import { MessageCircle, Shield, Heart } from 'lucide-react';
+import { MessageCircle, Shield, Heart, HelpCircle } from 'lucide-react';
 import { useCOAPageSetting } from '../hooks/useCOAPageSetting';
 
 const Footer: React.FC = () => {
@@ -43,6 +43,13 @@ const Footer: React.FC = () => {
                 <span>Lab Reports</span>
               </a>
             )}
+            <a
+              href="/faq"
+              className="flex items-center gap-2 text-gray-600 hover:text-theme-accent transition-colors text-sm font-medium"
+            >
+              <HelpCircle className="w-4 h-4" />
+              <span>FAQ</span>
+            </a>
             <a
               href={whatsappUrl}
               target="_blank"

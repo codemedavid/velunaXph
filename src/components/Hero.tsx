@@ -61,28 +61,28 @@ const Hero: React.FC<HeroProps> = ({ onShopAll }) => {
             </a>
           </div>
 
-          {/* Trust Indicators */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-12 border-t border-gray-100 pt-8 md:pt-12 max-w-3xl mx-auto">
-            <div className="flex flex-col items-center gap-2 group">
-              <div className="p-3 bg-white rounded-xl shadow-sm border border-gray-100 group-hover:border-theme-accent/30 transition-colors">
-                <ShieldCheck className="w-6 h-6 text-theme-accent" />
+          {/* Trust Indicators - Horizontal scrollable on mobile */}
+          <div className="flex flex-row items-stretch gap-4 md:gap-8 border-t border-gray-100 pt-8 md:pt-12 max-w-3xl mx-auto overflow-x-auto pb-2 scrollbar-hide">
+            <div className="flex flex-col items-center gap-2 group min-w-[100px] flex-1">
+              <div className="p-2 md:p-3 bg-white rounded-xl shadow-sm border border-gray-100 group-hover:border-theme-accent/30 transition-colors">
+                <ShieldCheck className="w-5 h-5 md:w-6 md:h-6 text-theme-accent" />
               </div>
-              <p className="font-semibold text-theme-text">Lab Verified</p>
-              <p className="text-sm text-gray-400">Purity Guaranteed</p>
+              <p className="font-semibold text-theme-text text-xs md:text-sm text-center">Lab Verified</p>
+              <p className="text-[10px] md:text-xs text-gray-400 text-center">Purity Guaranteed</p>
             </div>
-            <div className="flex flex-col items-center gap-2 group">
-              <div className="p-3 bg-white rounded-xl shadow-sm border border-gray-100 group-hover:border-theme-secondary/30 transition-colors">
-                <Sparkles className="w-6 h-6 text-theme-secondary" />
+            <div className="flex flex-col items-center gap-2 group min-w-[100px] flex-1">
+              <div className="p-2 md:p-3 bg-white rounded-xl shadow-sm border border-gray-100 group-hover:border-theme-secondary/30 transition-colors">
+                <Sparkles className="w-5 h-5 md:w-6 md:h-6 text-theme-secondary" />
               </div>
-              <p className="font-semibold text-theme-text">Premium Quality</p>
-              <p className="text-sm text-gray-400">Sourced for Excellence</p>
+              <p className="font-semibold text-theme-text text-xs md:text-sm text-center">Premium Quality</p>
+              <p className="text-[10px] md:text-xs text-gray-400 text-center">Sourced for Excellence</p>
             </div>
-            <div className="flex flex-col items-center gap-2 group">
-              <div className="p-3 bg-white rounded-xl shadow-sm border border-gray-100 group-hover:border-theme-accent/30 transition-colors">
-                <FlaskConical className="w-6 h-6 text-theme-accent" />
+            <div className="flex flex-col items-center gap-2 group min-w-[100px] flex-1">
+              <div className="p-2 md:p-3 bg-white rounded-xl shadow-sm border border-gray-100 group-hover:border-theme-accent/30 transition-colors">
+                <FlaskConical className="w-5 h-5 md:w-6 md:h-6 text-theme-accent" />
               </div>
-              <p className="font-semibold text-theme-text">Real-World Tested</p>
-              <p className="text-sm text-gray-400">Verified by Our Team</p>
+              <p className="font-semibold text-theme-text text-xs md:text-sm text-center">Real-World Tested</p>
+              <p className="text-[10px] md:text-xs text-gray-400 text-center">Verified by Our Team</p>
             </div>
           </div>
 

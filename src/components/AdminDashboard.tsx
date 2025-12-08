@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Edit, Trash2, Save, X, ArrowLeft, Beaker, TrendingUp, Package, Users, Lock, FolderOpen, CreditCard, Sparkles, Heart, Layers, Shield, RefreshCw, Warehouse, ShoppingCart } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, X, ArrowLeft, Beaker, TrendingUp, Package, Users, Lock, FolderOpen, CreditCard, Sparkles, Heart, Layers, Shield, RefreshCw, Warehouse, ShoppingCart, HelpCircle } from 'lucide-react';
 import type { Product } from '../types';
 import { useMenu } from '../hooks/useMenu';
 import { useCategories } from '../hooks/useCategories';
@@ -10,6 +10,7 @@ import VariationManager from './VariationManager';
 import COAManager from './COAManager';
 import PeptideInventoryManager from './PeptideInventoryManager';
 import OrdersManager from './OrdersManager';
+import FAQManager from './FAQManager';
 
 const AdminDashboard: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -19,7 +20,7 @@ const AdminDashboard: React.FC = () => {
   const [loginError, setLoginError] = useState('');
   const { products, loading, addProduct, updateProduct, deleteProduct, refreshProducts } = useMenu();
   const { categories } = useCategories();
-  const [currentView, setCurrentView] = useState<'dashboard' | 'products' | 'add' | 'edit' | 'categories' | 'payments' | 'coa' | 'inventory' | 'orders'>('dashboard');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'products' | 'add' | 'edit' | 'categories' | 'payments' | 'coa' | 'inventory' | 'orders' | 'faq'>('dashboard');
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [managingVariationsProductId, setManagingVariationsProductId] = useState<string | null>(null);
@@ -857,8 +858,8 @@ const AdminDashboard: React.FC = () => {
                         }}
                         disabled={isProcessing}
                         className={`p-1.5 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed ${product.variations && product.variations.length > 0
-                            ? 'bg-gold-500 text-black hover:bg-gold-600 shadow-md cursor-pointer'
-                            : 'text-gold-600 hover:bg-gold-100 cursor-pointer'
+                          ? 'bg-gold-500 text-black hover:bg-gold-600 shadow-md cursor-pointer'
+                          : 'text-gold-600 hover:bg-gold-100 cursor-pointer'
                           }`}
                         title="Manage Sizes - Click to edit prices!"
                       >
@@ -1008,8 +1009,8 @@ const AdminDashboard: React.FC = () => {
                               }}
                               disabled={isProcessing}
                               className={`p-1.5 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed ${product.variations && product.variations.length > 0
-                                  ? 'bg-gold-500 text-black hover:bg-gold-600 shadow-md hover:shadow-lg cursor-pointer'
-                                  : 'text-gold-600 hover:bg-gold-100 cursor-pointer'
+                                ? 'bg-gold-500 text-black hover:bg-gold-600 shadow-md hover:shadow-lg cursor-pointer'
+                                : 'text-gold-600 hover:bg-gold-100 cursor-pointer'
                                 }`}
                               title="Manage Sizes - Click here to edit prices!"
                             >
@@ -1089,6 +1090,34 @@ const AdminDashboard: React.FC = () => {
   // Orders View
   if (currentView === 'orders') {
     return <OrdersManager onBack={() => setCurrentView('dashboard')} />;
+  }
+
+  // FAQ View
+  if (currentView === 'faq') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-white">
+        <div className="bg-white shadow-md border-b border-gold-300/30">
+          <div className="max-w-6xl mx-auto px-3 sm:px-4">
+            <div className="flex items-center justify-between h-12 md:h-14">
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => setCurrentView('dashboard')}
+                  className="text-gray-700 hover:text-gold-600 transition-colors flex items-center gap-1 group"
+                >
+                  <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+                  <span className="text-xs md:text-sm">Dashboard</span>
+                </button>
+                <h1 className="text-sm md:text-base font-bold bg-gradient-to-r from-black to-gray-900 bg-clip-text text-transparent">❓ FAQ Management</h1>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="max-w-5xl mx-auto px-3 sm:px-4 py-3 md:py-4">
+          <FAQManager />
+        </div>
+      </div>
+    );
   }
 
   // Dashboard View
@@ -1272,6 +1301,15 @@ const AdminDashboard: React.FC = () => {
                   </div>
                   <span className="text-xs font-medium text-gray-900">Orders Management</span>
                 </button>
+                <button
+                  onClick={() => setCurrentView('faq')}
+                  className="w-full flex items-center gap-2 p-1.5 md:p-2 text-left hover:bg-gradient-to-r hover:from-gold-50 hover:to-gray-50 rounded-md md:rounded-lg transition-all group"
+                >
+                  <div className="p-1 md:p-1.5 bg-gradient-to-br from-gold-400 to-gold-600 rounded-md text-black">
+                    <HelpCircle className="h-3 w-3 md:h-4 md:w-4" />
+                  </div>
+                  <span className="text-xs font-medium text-gray-900">FAQ Management</span>
+                </button>
               </div>
             </div>
 
@@ -1294,8 +1332,8 @@ const AdminDashboard: React.FC = () => {
                     <div key={category.id} className="flex items-center justify-between py-1 md:py-1.5 hover:bg-gradient-to-r hover:from-gold-50 hover:to-gray-50 rounded-md md:rounded-lg px-2 transition-all">
                       <span className="text-xs font-semibold text-gray-900">{category.name}</span>
                       <span className={`text-[10px] md:text-xs font-bold ${index % 3 === 0 ? 'text-white bg-gradient-to-r from-black to-gray-900' :
-                          index % 3 === 1 ? 'text-black bg-gradient-to-r from-gold-500 to-gold-600' :
-                            'text-white bg-gradient-to-r from-gray-800 to-black'
+                        index % 3 === 1 ? 'text-black bg-gradient-to-r from-gold-500 to-gold-600' :
+                          'text-white bg-gradient-to-r from-gray-800 to-black'
                         } px-2 py-0.5 rounded-full shadow-sm`}>
                         {category.count}
                       </span>

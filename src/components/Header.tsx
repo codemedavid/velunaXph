@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useCOAPageSetting } from '../hooks/useCOAPageSetting';
-import { ShoppingCart, Menu, X, MessageCircle } from 'lucide-react';
+import { ShoppingCart, Menu, X, MessageCircle, HelpCircle } from 'lucide-react';
 
 interface HeaderProps {
   cartItemsCount: number;
@@ -65,6 +65,12 @@ const Header: React.FC<HeaderProps> = ({ cartItemsCount, onCartClick, onMenuClic
                     Lab Reports
                   </a>
                 )}
+                <a
+                  href="/faq"
+                  className="text-sm font-medium text-gray-600 hover:text-theme-accent transition-colors"
+                >
+                  FAQ
+                </a>
                 <a
                   href={whatsappUrl}
                   target="_blank"
@@ -133,6 +139,13 @@ const Header: React.FC<HeaderProps> = ({ cartItemsCount, onCartClick, onMenuClic
                     Lab Reports
                   </a>
                 )}
+                <a
+                  href="/faq"
+                  className="text-left text-theme-text font-medium text-base hover:text-theme-accent transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  FAQ
+                </a>
                 <div className="pt-4 border-t border-gray-100 flex flex-col gap-3">
                   <a
                     href={whatsappUrl}
