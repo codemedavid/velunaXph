@@ -5,23 +5,27 @@
 @tailwind utilities;
 
 :root {
-  /* Magenta-led Peptide Pulse Brand Theme */
+  /* Soft Luxury Peptide Wellness Theme */
   --theme-bg: #FFFFFF;
-  --theme-text: #111111;
-  --theme-accent: #E91E63;
-  --theme-accent-hover: #FF4F9A;
-  --theme-secondary: #F4F4F6;
-  --text-secondary: #4A4A4A;
+  --theme-text: #3B2A6F;
+  --theme-accent: #B9A7D3;
+  --theme-accent-hover: #3B2A6F;
+  --theme-secondary: #FAF7F5;
+  --text-secondary: #5A4A7A;
 
-  --primary-magenta: #E91E63;
+  --primary-lavender: #B9A7D3;
+  --primary-deep-purple: #3B2A6F;
+  --accent-blush: #F28C99;
+  --accent-gold: #F6C453;
+  --warm-beige: #E6D2C8;
   --primary-white: #ffffff;
 
   --gray-50: #FFFFFF;
-  --gray-100: #F9F9F9;
-  --gray-200: #F4F4F6;
-  --gray-300: #E5E5E5;
-  --gray-500: #888888;
-  --gray-900: #111111;
+  --gray-100: #FAF7F5;
+  --gray-200: #F5EFEA;
+  --gray-300: #E6D2C8;
+  --gray-500: #A08BC4;
+  --gray-900: #3B2A6F;
 }
 
 * {

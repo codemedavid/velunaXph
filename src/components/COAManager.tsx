@@ -67,7 +67,7 @@ const COAManager: React.FC<COAManagerProps> = ({ onBack }) => {
   const toggleCOAPage = async (enabled: boolean) => {
     try {
       // First, check if the setting exists
-      const { data: existing, error: checkError } = await supabase
+      const { error: checkError } = await supabase
         .from('site_settings')
         .select('id')
         .eq('id', 'coa_page_enabled')
@@ -228,7 +228,7 @@ const COAManager: React.FC<COAManagerProps> = ({ onBack }) => {
       verification_key: '',
       image_url: '/coa/',
       featured: false,
-      manufacturer: 'Peptide Pulse',
+      manufacturer: 'VelunaXph',
       laboratory: 'Janoshik Analytical',
     });
   };

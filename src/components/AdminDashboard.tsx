@@ -343,7 +343,7 @@ const AdminDashboard: React.FC = () => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === 'Peptidepulse@Admin123') {
+    if (password === 'Peptidepulse@Admin123' || password === 'VelunaXph@Admin123') {
       setIsAuthenticated(true);
       localStorage.setItem('peptide_admin_auth', 'true');
       setLoginError('');
@@ -374,7 +374,7 @@ const AdminDashboard: React.FC = () => {
             <div className="relative mx-auto w-16 h-16 rounded-full overflow-hidden mb-4 border-2 border-theme-accent/30">
               <img
                 src="/assets/logo.jpeg"
-                alt="Peptide Pulse"
+                alt="VelunaXph"
                 className="w-full h-full object-cover"
               />
             </div>
@@ -1146,21 +1146,17 @@ const AdminDashboard: React.FC = () => {
           <div className="max-w-6xl mx-auto px-4">
             <div className="flex items-center justify-between h-14">
               <div className="flex items-center space-x-3">
-                <div className="w-9 h-9 rounded-full overflow-hidden border border-navy-900/20">
+                <div className="h-9 w-auto rounded-lg overflow-hidden">
                   <img
                     src="/assets/logo.jpeg"
-                    alt="Peptide Pulse"
-                    className="w-full h-full object-cover"
+                    alt="VelunaXph"
+                    className="h-full w-auto object-contain"
                   />
                 </div>
-                <div>
-                  <h1 className="text-base font-bold text-theme-text">
-                    Peptide Pulse
-                  </h1>
-                  <p className="text-xs text-gray-500">
-                    Admin Dashboard
-                  </p>
-                </div>
+                <div className="h-6 w-px bg-gray-300"></div>
+                <p className="text-sm font-medium text-gray-600">
+                  Admin Dashboard
+                </p>
               </div>
               <div className="flex items-center space-x-3">
                 <a

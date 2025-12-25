@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useCOAPageSetting } from '../hooks/useCOAPageSetting';
-import { ShoppingCart, Menu, X, MessageCircle, Calculator, FileText, HelpCircle, Truck, ClipboardCheck } from 'lucide-react';
+import { ShoppingCart, Menu, X, Calculator, FileText, HelpCircle, Truck, ClipboardCheck } from 'lucide-react';
 
 interface HeaderProps {
   cartItemsCount: number;
@@ -20,26 +20,16 @@ const Header: React.FC<HeaderProps> = ({ cartItemsCount, onCartClick, onMenuClic
             {/* Logo and Brand */}
             <button
               onClick={() => { onMenuClick(); setMobileMenuOpen(false); }}
-              className="flex items-center space-x-3 hover:opacity-80 transition-all group min-w-0 flex-1 max-w-[calc(100%-130px)] sm:max-w-none sm:flex-initial"
+              className="flex items-center hover:opacity-80 transition-all group"
             >
               <div className="relative flex-shrink-0">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden border border-gray-200">
+                <div className="h-10 sm:h-12 w-auto rounded-lg overflow-hidden">
                   <img
                     src="/assets/logo.jpeg"
-                    alt="Peptide Pulse"
-                    className="w-full h-full object-cover"
+                    alt="VelunaXph"
+                    className="h-full w-auto object-contain"
                   />
                 </div>
-              </div>
-              <div className="text-left min-w-0 flex-1">
-                <h1 className="text-lg sm:text-xl font-bold text-theme-text leading-tight whitespace-nowrap overflow-hidden text-ellipsis tracking-tight">
-                  Peptide Pulse
-                </h1>
-                <p className="text-xs text-gray-500 font-medium flex items-center gap-1">
-                  <span className="whitespace-nowrap overflow-hidden text-ellipsis">
-                    Premium Peptide Solutions
-                  </span>
-                </p>
               </div>
             </button>
 
@@ -89,15 +79,6 @@ const Header: React.FC<HeaderProps> = ({ cartItemsCount, onCartClick, onMenuClic
                 >
                   <ClipboardCheck className="w-4 h-4" />
                   Assessment
-                </a>
-                <a
-                  href="https://t.me/+k3SfL4WjnMQ3NGRl"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm font-medium text-gray-600 hover:text-[#0088cc] transition-colors flex items-center gap-1"
-                >
-                  <MessageCircle className="w-4 h-4" />
-                  Join Community
                 </a>
               </nav>
 
@@ -217,17 +198,6 @@ const Header: React.FC<HeaderProps> = ({ cartItemsCount, onCartClick, onMenuClic
                     <ClipboardCheck className="w-5 h-5 text-gold-500" />
                   </div>
                   Assessment
-                </a>
-                <a
-                  href="https://t.me/+k3SfL4WjnMQ3NGRl"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 p-3 rounded-xl text-left font-medium text-base text-navy-900 hover:bg-navy-50 hover:text-navy-900 transition-all group"
-                >
-                  <div className="p-2 rounded-lg bg-navy-50 group-hover:bg-white group-hover:shadow-sm border border-transparent group-hover:border-navy-600 transition-all">
-                    <MessageCircle className="w-5 h-5 text-gold-500" />
-                  </div>
-                  Join Community
                 </a>
               </div>
             </nav>

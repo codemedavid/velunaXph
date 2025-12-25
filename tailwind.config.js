@@ -7,73 +7,114 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Magenta-led SlimDose Brand Theme
+        // Soft Luxury Peptide Wellness Theme
         'theme-bg': '#FFFFFF',        // Pure white background
-        'theme-text': '#111111',      // Charcoal black (headings)
-        'theme-accent': '#E91E63',    // Primary Magenta (hero color)
-        'theme-accent-hover': '#FF4F9A', // Neon pink for hover
-        'theme-secondary': '#F4F4F6', // Soft gray (UI backgrounds)
-        'text-secondary': '#4A4A4A',  // Cool dark gray (body text)
+        'theme-text': '#3B2A6F',      // Deep Purple (headings)
+        'theme-accent': '#B9A7D3',    // Lavender Purple (primary)
+        'theme-accent-hover': '#3B2A6F', // Deep Purple for hover
+        'theme-secondary': '#FAF7F5', // Soft off-white (UI backgrounds)
+        'text-secondary': '#5A4A7A',  // Muted purple (body text)
 
-        // Magenta scale (primary brand color)
-        magenta: {
-          50: '#FCE4EC',
-          100: '#F8BBD9',
-          200: '#F48FB1',
-          300: '#F06292',
-          400: '#EC407A',
-          500: '#E91E63', // Primary magenta
-          600: '#D81B60',
-          700: '#C2185B',
-          800: '#AD1457',
-          900: '#880E4F',
+        // Lavender scale (primary brand color)
+        lavender: {
+          50: '#F5F2F9',
+          100: '#EBE5F3',
+          200: '#D9CEE6',
+          300: '#C7B7D9',
+          400: '#B9A7D3',  // Primary lavender
+          500: '#A08BC4',
+          600: '#8A73B3',
+          700: '#6F5A96',
+          800: '#554378',
+          900: '#3B2A6F',  // Deep purple
         },
-        // Primary scale mapped to magenta for compatibility
+        // Magenta kept for backward compatibility, mapped to lavender
+        magenta: {
+          50: '#F5F2F9',
+          100: '#EBE5F3',
+          200: '#D9CEE6',
+          300: '#C7B7D9',
+          400: '#B9A7D3',
+          500: '#A08BC4',
+          600: '#8A73B3',
+          700: '#6F5A96',
+          800: '#554378',
+          900: '#3B2A6F',
+        },
+        // Primary scale mapped to lavender
         primary: {
-          50: '#FCE4EC',
-          100: '#F8BBD9',
-          200: '#F48FB1',
-          300: '#F06292',
-          400: '#EC407A',
-          500: '#E91E63',
-          600: '#D81B60',
-          700: '#C2185B',
-          800: '#AD1457',
-          900: '#880E4F',
+          50: '#F5F2F9',
+          100: '#EBE5F3',
+          200: '#D9CEE6',
+          300: '#C7B7D9',
+          400: '#B9A7D3',
+          500: '#A08BC4',
+          600: '#8A73B3',
+          700: '#6F5A96',
+          800: '#554378',
+          900: '#3B2A6F',
+        },
+        // Blush Pink (secondary wellness color)
+        blush: {
+          50: '#FEF2F4',
+          100: '#FDCDD4',
+          200: '#F9A8B5',
+          300: '#F28C99',  // Main blush
+          400: '#E87585',
+          500: '#D65F71',
+          600: '#C24A5E',
+          700: '#A3374B',
+          800: '#832839',
+          900: '#641C2A',
+        },
+        // Soft Gold (accent for vitality/premium)
+        gold: {
+          50: '#FEFAED',
+          100: '#FCF0C8',
+          200: '#FAE5A3',
+          300: '#F8DA7E',
+          400: '#F6C453',  // Main gold
+          500: '#E5B23D',
+          600: '#C9962E',
+          700: '#A87A21',
+          800: '#875F17',
+          900: '#66450F',
+        },
+        // Beige (warm neutral)
+        beige: {
+          50: '#FAF7F5',
+          100: '#F5EFEA',
+          200: '#EDE4DC',
+          300: '#E6D2C8',  // Main beige
+          400: '#D4BFB3',
+          500: '#C2ADA0',
+          600: '#A8918A',
+          700: '#8E7674',
+          800: '#745B5E',
+          900: '#5A4248',
         },
         // Accent colors
         accent: {
-          light: '#FF4F9A',   // Neon pink
-          DEFAULT: '#E91E63', // Magenta
-          dark: '#C2185B',
+          light: '#C7B7D9',   // Light lavender
+          DEFAULT: '#B9A7D3', // Lavender
+          dark: '#3B2A6F',    // Deep purple
+          blush: '#F28C99',   // Blush pink
+          gold: '#F6C453',    // Soft gold
           white: '#FFFFFF',
-          black: '#111111',
+          black: '#3B2A6F',
         },
-        // Teal for biotech credibility (optional contrast)
-        teal: {
-          50: '#E0F7F5',
-          100: '#B2EBE5',
-          200: '#80DED3',
-          300: '#4DD0C1',
-          400: '#26C6B3',
-          500: '#00B3A4', // Main teal
-          600: '#00A396',
-          700: '#009085',
-          800: '#007D73',
-          900: '#005C55',
-        },
-        // Navy kept for backward compatibility, mapped to magenta tones
+        // Navy kept for backward compatibility, mapped to deep purple tones
         navy: {
-          50: '#FCE4EC',
-          100: '#F8BBD9',
-          200: '#F48FB1',
-          300: '#F06292',
-          400: '#EC407A',
-          500: '#E91E63',
-          600: '#D81B60',
-          700: '#C2185B',
-          800: '#AD1457',
-          900: '#880E4F',
+          50: '#F5F2F9',
+          100: '#EBE5F3',
+          200: '#D9CEE6',
+          300: '#C7B7D9',
+          400: '#B9A7D3',
+          500: '#A08BC4',
+          600: '#8A73B3',
+          700: '#6F5A96',
+          800: '#554378',
+          900: '#3B2A6F',
         },
       },
       fontFamily: {

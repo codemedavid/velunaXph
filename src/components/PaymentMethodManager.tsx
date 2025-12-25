@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Edit, Trash2, Save, X, ArrowLeft, CreditCard, Upload } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, X, ArrowLeft, CreditCard } from 'lucide-react';
 import { usePaymentMethods, PaymentMethod } from '../hooks/usePaymentMethods';
 import ImageUpload from './ImageUpload';
 
@@ -219,7 +219,7 @@ const PaymentMethodManager: React.FC<PaymentMethodManagerProps> = ({ onBack }) =
                   value={formData.account_name}
                   onChange={(e) => setFormData({ ...formData, account_name: e.target.value })}
                   className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border-2 border-navy-700/30 rounded-lg focus:ring-2 focus:ring-gold-500 focus:border-navy-900 transition-colors"
-                  placeholder="Peptide Pulse"
+                  placeholder="VelunaXph"
                 />
               </div>
 
