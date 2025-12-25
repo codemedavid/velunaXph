@@ -35,8 +35,8 @@ const Footer: React.FC = () => {
           {/* Contact Emails */}
           <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-sm text-gray-500">
             <span className="text-xs font-medium text-gray-400 uppercase">Contact Us:</span>
-            <a href="mailto:whisperer@gmail.com" className="hover:text-theme-accent transition-colors">
-              whisperer@gmail.com
+            <a href="mailto:peptidewhisperer@gmail.com" className="hover:text-theme-accent transition-colors">
+              peptidewhisperer@gmail.com
             </a>
             <span className="hidden sm:inline text-gray-300">|</span>
             <a href="mailto:thepeptidepulse@gmail.com" className="hover:text-theme-accent transition-colors">
