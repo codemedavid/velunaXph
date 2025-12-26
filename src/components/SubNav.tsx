@@ -18,6 +18,18 @@ const iconMap: { [key: string]: React.ReactElement } = {
 const SubNav: React.FC<SubNavProps> = ({ selectedCategory, onCategoryClick }) => {
   const { categories, loading } = useCategories();
 
+  // Add "All Peptides" category at the beginning
+  const allPeptidesCategory = {
+    id: 'all',
+    name: 'All Peptides',
+    icon: 'Grid',
+    sort_order: 0,
+    active: true,
+    created_at: '',
+    updated_at: ''
+  };
+  const allCategories = [allPeptidesCategory, ...categories];
+
   if (loading) {
     return (
       <div className="bg-white shadow-sm border-b border-gray-100 hidden md:block">
@@ -36,7 +48,7 @@ const SubNav: React.FC<SubNavProps> = ({ selectedCategory, onCategoryClick }) =>
     <nav className="bg-white shadow-sm sticky top-[64px] md:top-[80px] lg:top-[88px] z-40 border-b-4 border-navy-900">
       <div className="container mx-auto px-4">
         <div className="flex items-center space-x-2 py-4 overflow-x-auto scrollbar-hide">
-          {categories.map((category) => {
+          {allCategories.map((category) => {
             const isSelected = selectedCategory === category.id;
 
             return (
