@@ -205,18 +205,6 @@ const Hero: React.FC<HeroProps> = ({ onShopAll }) => {
             >
               Explore Peptides
             </button>
-
-            {/* Secondary CTA - White/Cream Outlined */}
-            <button
-              className="w-full sm:w-auto px-8 py-4 font-semibold text-base sm:text-lg rounded-full border-2 transition-all duration-300 hover:shadow-md"
-              style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                borderColor: '#E0D0D0',
-                color: '#6A5A7A'
-              }}
-            >
-              Learn the Science
-            </button>
           </div>
         </div>
       </div>

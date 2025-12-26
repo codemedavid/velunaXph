@@ -20,7 +20,7 @@ const Header: React.FC<HeaderProps> = ({ cartItemsCount, onCartClick, onMenuClic
             {/* Logo and Brand */}
             <button
               onClick={() => { onMenuClick(); setMobileMenuOpen(false); }}
-              className="flex items-center hover:opacity-80 transition-all group"
+              className="flex items-center gap-3 hover:opacity-80 transition-all group"
             >
               <div className="relative flex-shrink-0">
                 <div className="h-10 sm:h-12 w-auto rounded-lg overflow-hidden">
@@ -30,6 +30,12 @@ const Header: React.FC<HeaderProps> = ({ cartItemsCount, onCartClick, onMenuClic
                     className="h-full w-auto object-contain"
                   />
                 </div>
+              </div>
+              <div className="hidden sm:flex items-center gap-3">
+                <div className="h-8 w-px bg-gradient-to-b from-transparent via-purple-300 to-transparent"></div>
+                <span className="text-sm font-medium bg-gradient-to-r from-purple-600 to-purple-400 bg-clip-text text-transparent tracking-wide">
+                  Vitality meets Beauty
+                </span>
               </div>
             </button>
 
