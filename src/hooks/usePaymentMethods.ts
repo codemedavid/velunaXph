@@ -21,7 +21,7 @@ export const usePaymentMethods = () => {
   const fetchPaymentMethods = async () => {
     try {
       setLoading(true);
-      
+
       const { data, error: fetchError } = await supabase
         .from('payment_methods')
         .select('*')
@@ -43,7 +43,7 @@ export const usePaymentMethods = () => {
   const fetchAllPaymentMethods = async () => {
     try {
       setLoading(true);
-      
+
       const { data, error: fetchError } = await supabase
         .from('payment_methods')
         .select('*')
@@ -61,7 +61,7 @@ export const usePaymentMethods = () => {
     }
   };
 
-  const addPaymentMethod = async (method: Omit<PaymentMethod, 'created_at' | 'updated_at'>) => {
+  const addPaymentMethod = async (method: Omit<PaymentMethod, 'id' | 'created_at' | 'updated_at'>) => {
     try {
       // Normalize qr_code_url: undefined/null/empty string → placeholder URL
       // Database requires NOT NULL, so we use a placeholder if empty
@@ -70,19 +70,17 @@ export const usePaymentMethods = () => {
         // Use a placeholder image URL if no QR code is provided
         qrCodeUrl = 'https://images.pexels.com/photos/8867482/pexels-photo-8867482.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop';
       }
-      
-      console.log('📤 Adding payment method:', { 
-        id: method.id, 
+
+      console.log('📤 Adding payment method:', {
         name: method.name,
         qr_code_url: qrCodeUrl,
         qr_code_url_length: qrCodeUrl.length,
         is_placeholder: qrCodeUrl.includes('pexels.com')
       });
-      
+
       const { data, error: insertError } = await supabase
         .from('payment_methods')
         .insert({
-          id: method.id,
           name: method.name,
           account_number: method.account_number,
           account_name: method.account_name,
@@ -98,7 +96,7 @@ export const usePaymentMethods = () => {
         console.error('❌ Error code:', insertError.code);
         console.error('❌ Error message:', insertError.message);
         console.error('❌ Error details:', JSON.stringify(insertError, null, 2));
-        
+
         // Provide more helpful error message
         let errorMessage = insertError.message || 'Unknown error';
         if (insertError.code === '42501' || insertError.message?.includes('permission') || insertError.message?.includes('policy')) {
@@ -106,15 +104,15 @@ export const usePaymentMethods = () => {
         } else if (insertError.message?.includes('null value') || insertError.message?.includes('NOT NULL')) {
           errorMessage = 'Database error: Required field is missing. Please check all required fields are filled.';
         } else if (insertError.message?.includes('duplicate key') || insertError.message?.includes('unique constraint')) {
-          errorMessage = `A payment method with ID "${method.id}" already exists. Please use a different ID.`;
+          errorMessage = 'A payment method with this name already exists.';
         }
-        
+
         throw new Error(errorMessage);
       }
 
-      console.log('✅ Payment method added:', { 
-        id: data?.id, 
-        qr_code_url: data?.qr_code_url 
+      console.log('✅ Payment method added:', {
+        id: data?.id,
+        qr_code_url: data?.qr_code_url
       });
 
       await fetchAllPaymentMethods();
@@ -129,21 +127,21 @@ export const usePaymentMethods = () => {
     try {
       // Create update payload
       const updatePayload: any = {};
-      
+
       // Include all fields that are in the updates object
       if (updates.name !== undefined) updatePayload.name = updates.name;
       if (updates.account_number !== undefined) updatePayload.account_number = updates.account_number;
       if (updates.account_name !== undefined) updatePayload.account_name = updates.account_name;
       if (updates.active !== undefined) updatePayload.active = updates.active;
       if (updates.sort_order !== undefined) updatePayload.sort_order = updates.sort_order;
-      
+
       // ALWAYS explicitly handle qr_code_url if it's in updates
       // Normalize: undefined/null/empty → placeholder URL (database requires NOT NULL)
       if ('qr_code_url' in updates) {
         if (updates.qr_code_url !== undefined && updates.qr_code_url !== null) {
           const urlString = String(updates.qr_code_url).trim();
           // Use placeholder if empty (database requires NOT NULL)
-          updatePayload.qr_code_url = urlString === '' 
+          updatePayload.qr_code_url = urlString === ''
             ? 'https://images.pexels.com/photos/8867482/pexels-photo-8867482.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop'
             : urlString;
         } else {
@@ -151,17 +149,17 @@ export const usePaymentMethods = () => {
           updatePayload.qr_code_url = 'https://images.pexels.com/photos/8867482/pexels-photo-8867482.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop';
         }
       }
-      
-      console.log('📤 Updating payment method:', { 
-        id, 
+
+      console.log('📤 Updating payment method:', {
+        id,
         qr_code_url: updatePayload.qr_code_url,
         qr_code_url_type: typeof updatePayload.qr_code_url,
         qr_code_url_length: updatePayload.qr_code_url?.length || 0,
         has_qr_code_url: 'qr_code_url' in updatePayload,
         payload_keys: Object.keys(updatePayload),
-        fullPayload: updatePayload 
+        fullPayload: updatePayload
       });
-      
+
       const { data, error: updateError } = await supabase
         .from('payment_methods')
         .update(updatePayload)
@@ -174,7 +172,7 @@ export const usePaymentMethods = () => {
         console.error('❌ Error code:', updateError.code);
         console.error('❌ Error message:', updateError.message);
         console.error('❌ Error details:', JSON.stringify(updateError, null, 2));
-        
+
         // Provide more helpful error message
         let errorMessage = updateError.message || 'Unknown error';
         if (updateError.code === '42501' || updateError.message?.includes('permission') || updateError.message?.includes('policy')) {
@@ -182,17 +180,17 @@ export const usePaymentMethods = () => {
         } else if (updateError.message?.includes('null value') || updateError.message?.includes('NOT NULL')) {
           errorMessage = 'Database error: Required field is missing. Please check all required fields are filled.';
         }
-        
+
         throw new Error(errorMessage);
       }
 
-      console.log('✅ Payment method updated:', { 
-        id, 
+      console.log('✅ Payment method updated:', {
+        id,
         qr_code_url: data?.qr_code_url,
         qr_code_url_type: typeof data?.qr_code_url,
         qr_code_url_length: data?.qr_code_url?.length || 0
       });
-      
+
       // Verify the qr_code_url was actually saved
       if ('qr_code_url' in updatePayload && updatePayload.qr_code_url && data?.qr_code_url !== updatePayload.qr_code_url) {
         console.warn('⚠️ WARNING: qr_code_url mismatch!', {
