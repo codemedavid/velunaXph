@@ -30,11 +30,21 @@ const COA: React.FC = () => {
     try {
       const { data, error } = await supabase
         .from('coa_reports')
-        .select('*')
+        .select('*, coa_images(image_data)')
         .order('test_date', { ascending: false });
 
       if (error) throw error;
-      setCOAReports(data || []);
+
+      // Transform data to use the base64 image from coa_images if available
+      const reportsWithImages = (data || []).map((report: any) => {
+        const imageFromDb = report.coa_images?.[0]?.image_data;
+        return {
+          ...report,
+          image_url: imageFromDb || report.image_url
+        };
+      });
+
+      setCOAReports(reportsWithImages);
     } catch (error) {
       console.error('Error fetching COA reports:', error);
     } finally {

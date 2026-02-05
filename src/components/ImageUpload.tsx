@@ -7,13 +7,15 @@ interface ImageUploadProps {
   onImageChange: (imageUrl: string | undefined) => void;
   className?: string;
   folder?: string;
+  storageMode?: 'bucket' | 'base64';
 }
 
-const ImageUpload: React.FC<ImageUploadProps> = ({ 
-  currentImage, 
-  onImageChange, 
+const ImageUpload: React.FC<ImageUploadProps> = ({
+  currentImage,
+  onImageChange,
   className = '',
-  folder = 'menu-images'
+  folder = 'menu-images',
+  storageMode = 'bucket'
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { uploadImage, deleteImage, uploading, uploadProgress } = useImageUpload(folder);
@@ -23,8 +25,22 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     if (!file) return;
 
     try {
-      const imageUrl = await uploadImage(file);
-      onImageChange(imageUrl);
+      if (storageMode === 'base64') {
+        // Convert to Base64
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64String = reader.result as string;
+          onImageChange(base64String);
+        };
+        reader.onerror = () => {
+          throw new Error('Failed to read file');
+        };
+        reader.readAsDataURL(file);
+      } else {
+        // Upload to bucket
+        const imageUrl = await uploadImage(file);
+        onImageChange(imageUrl);
+      }
     } catch (error) {
       alert(error instanceof Error ? error.message : 'Failed to upload image');
     }
@@ -38,7 +54,9 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   const handleRemoveImage = async () => {
     if (currentImage) {
       try {
-        await deleteImage(currentImage);
+        if (storageMode === 'bucket') {
+          await deleteImage(currentImage);
+        }
         onImageChange(undefined);
       } catch (error) {
         console.error('Error removing image:', error);
@@ -63,6 +81,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
             loading="lazy"
             decoding="async"
             onError={(e) => {
+              // Hide broken images, but for base64 it shouldn't happen immediately if valid
               e.currentTarget.style.display = 'none';
             }}
             onLoad={(e) => {
@@ -74,7 +93,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
             type="button"
             onClick={handleRemoveImage}
             className="absolute top-3 right-3 p-2 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg transition-all"
-            disabled={uploading}
+            disabled={uploading && storageMode === 'bucket'}
           >
             <X className="h-5 w-5" />
           </button>
@@ -84,12 +103,12 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
           onClick={triggerFileSelect}
           className="w-full max-w-2xl border-2 border-dashed border-sky-300 rounded-2xl p-12 flex flex-col items-center justify-center cursor-pointer hover:border-sky-400 hover:bg-sky-50/50 transition-all duration-300 bg-gradient-to-br from-sky-50/30 to-blue-50/30"
         >
-          {uploading ? (
+          {uploading && storageMode === 'bucket' ? (
             <div className="text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600 mx-auto mb-2"></div>
               <p className="text-sm text-gray-600">Uploading... {uploadProgress}%</p>
               <div className="w-32 bg-gray-200 rounded-full h-2 mt-2">
-                <div 
+                <div
                   className="bg-sky-600 h-2 rounded-full transition-all duration-300"
                   style={{ width: `${uploadProgress}%` }}
                 ></div>
@@ -112,7 +131,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         accept="image/*"
         onChange={handleFileSelect}
         className="hidden"
-        disabled={uploading}
+        disabled={uploading && storageMode === 'bucket'}
       />
 
       {!currentImage && (
@@ -120,7 +139,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
           <button
             type="button"
             onClick={triggerFileSelect}
-            disabled={uploading}
+            disabled={uploading && storageMode === 'bucket'}
             className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white rounded-2xl font-medium shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Upload className="h-5 w-5" />
@@ -139,7 +158,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
           onChange={(e) => onImageChange(e.target.value || undefined)}
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
           placeholder="https://example.com/image.jpg"
-          disabled={uploading}
+          disabled={uploading && storageMode === 'bucket'}
         />
       </div>
     </div>

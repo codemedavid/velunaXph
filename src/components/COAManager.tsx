@@ -121,7 +121,7 @@ const COAManager: React.FC<COAManagerProps> = ({ onBack }) => {
       setLoading(true);
       const { data, error } = await supabase
         .from('coa_reports')
-        .select('*')
+        .select('*, coa_images(image_data)')
         .order('test_date', { ascending: false });
 
       if (error) {
@@ -138,7 +138,16 @@ const COAManager: React.FC<COAManagerProps> = ({ onBack }) => {
         throw error;
       }
 
-      setCOAReports(data || []);
+      // Transform data to use the base64 image from coa_images if available
+      const reportsWithImages = (data || []).map((report: any) => {
+        const imageFromDb = report.coa_images?.[0]?.image_data;
+        return {
+          ...report,
+          image_url: imageFromDb || report.image_url
+        };
+      });
+
+      setCOAReports(reportsWithImages);
     } catch (error) {
       console.error('Error fetching COA reports:', error);
       // Don't show alert here if we already showed it above
@@ -152,24 +161,57 @@ const COAManager: React.FC<COAManagerProps> = ({ onBack }) => {
     e.preventDefault();
 
     try {
+      // 1. Prepare report data (exclude image_url which is base64 now)
+      const reportData = { ...formData };
+
+      // We don't save the base64 string in coa_reports table (it's too big)
+      // We'll save a placeholder or the filename if available, or just empty
+      // But we need to keep 'image_url' column for compatibility if required
+      const imageBase64 = reportData.image_url;
+      reportData.image_url = 'stored_in_db'; // Placeholder
+
+      let savedReportId = editingId;
+
       if (editingId) {
-        // Update existing report
+        // Update existing report metadata
         const { error } = await supabase
           .from('coa_reports')
-          .update(formData)
+          .update(reportData)
           .eq('id', editingId);
 
         if (error) throw error;
-        alert('✅ COA report updated successfully!');
       } else {
-        // Create new report
-        const { error } = await supabase
+        // Create new report metadata
+        const { data, error } = await supabase
           .from('coa_reports')
-          .insert([formData]);
+          .insert([reportData])
+          .select()
+          .single();
 
         if (error) throw error;
-        alert('✅ COA report added successfully!');
+        savedReportId = data.id;
       }
+
+      // 2. Save Image to coa_images table
+      if (savedReportId && imageBase64 && imageBase64.startsWith('data:image')) {
+        // First delete any existing image for this report (to ensure 1:1)
+        await supabase.from('coa_images').delete().eq('report_id', savedReportId);
+
+        // Insert new image
+        const { error: imageError } = await supabase
+          .from('coa_images')
+          .insert({
+            report_id: savedReportId,
+            image_data: imageBase64
+          });
+
+        if (imageError) {
+          console.error('Error saving image data:', imageError);
+          alert('⚠️ Report saved but image failed to save.');
+        }
+      }
+
+      alert(editingId ? '✅ COA report updated successfully!' : '✅ COA report added successfully!');
 
       setEditingId(null);
       setIsAdding(false);
@@ -185,6 +227,9 @@ const COAManager: React.FC<COAManagerProps> = ({ onBack }) => {
     if (!confirm('Are you sure you want to delete this COA report?')) return;
 
     try {
+      // Delete image first (although CASCADE should handle it if set up, explicit is safer)
+      await supabase.from('coa_images').delete().eq('report_id', id);
+
       const { error } = await supabase
         .from('coa_reports')
         .delete()
@@ -199,10 +244,26 @@ const COAManager: React.FC<COAManagerProps> = ({ onBack }) => {
     }
   };
 
-  const handleEdit = (report: COAReport) => {
+  const handleEdit = async (report: COAReport) => {
+    // 1. Set basic data first
     setFormData(report);
     setEditingId(report.id);
     setIsAdding(false);
+
+    // 2. Fetch image data from DB
+    try {
+      const { data, error } = await supabase
+        .from('coa_images')
+        .select('image_data')
+        .eq('report_id', report.id)
+        .maybeSingle();
+
+      if (data && data.image_data) {
+        setFormData(prev => ({ ...prev, image_url: data.image_data }));
+      }
+    } catch (err) {
+      console.error("Error fetching image for report:", err);
+    }
   };
 
   const handleAdd = () => {
@@ -226,7 +287,7 @@ const COAManager: React.FC<COAManagerProps> = ({ onBack }) => {
       quantity: '',
       task_number: '',
       verification_key: '',
-      image_url: '/coa/',
+      image_url: '',
       featured: false,
       manufacturer: 'VelunaXph',
       laboratory: 'Janoshik Analytical',
@@ -407,6 +468,7 @@ const COAManager: React.FC<COAManagerProps> = ({ onBack }) => {
                   currentImage={formData.image_url}
                   onImageChange={(url) => setFormData({ ...formData, image_url: url || '' })}
                   folder="coa-images"
+                  storageMode="base64"
                 />
               </div>
 
