@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Save, X, Shield, ExternalLink, Sparkles, ArrowLeft } from 'lucide-react';
+import { Plus, Edit2, Trash2, Save, X, Shield, ExternalLink, Sparkles, ArrowLeft, Link } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import ImageUpload from './ImageUpload';
 
@@ -28,6 +28,9 @@ const COAManager: React.FC<COAManagerProps> = ({ onBack }) => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [coaPageEnabled, setCoaPageEnabled] = useState<boolean>(true);
+  const [officialCoaLink, setOfficialCoaLink] = useState<string>('');
+  const [officialCoaLinkDraft, setOfficialCoaLinkDraft] = useState<string>('');
+  const [officialCoaLinkSaving, setOfficialCoaLinkSaving] = useState(false);
   const [formData, setFormData] = useState<Partial<COAReport>>({
     product_name: '',
     batch: 'Unknown',
@@ -45,6 +48,7 @@ const COAManager: React.FC<COAManagerProps> = ({ onBack }) => {
   useEffect(() => {
     fetchCOAReports();
     fetchCOAPageSetting();
+    fetchOfficialCoaLink();
   }, []);
 
   const fetchCOAPageSetting = async () => {
@@ -113,6 +117,70 @@ const COAManager: React.FC<COAManagerProps> = ({ onBack }) => {
       console.error('Error updating COA page setting:', error);
       const errorMessage = error?.message || 'Unknown error';
       alert(`❌ Failed to update COA page setting: ${errorMessage}\n\nThis might be a permissions issue. Please check your database RLS policies.`);
+    }
+  };
+
+  const fetchOfficialCoaLink = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('site_settings')
+        .select('value')
+        .eq('id', 'coa_official_link')
+        .single();
+
+      if (error && error.code !== 'PGRST116') throw error;
+      const link = data?.value || '';
+      setOfficialCoaLink(link);
+      setOfficialCoaLinkDraft(link);
+    } catch (error) {
+      console.error('Error fetching official COA link:', error);
+    }
+  };
+
+  const saveOfficialCoaLink = async () => {
+    setOfficialCoaLinkSaving(true);
+    try {
+      const { error: checkError } = await supabase
+        .from('site_settings')
+        .select('id')
+        .eq('id', 'coa_official_link')
+        .single();
+
+      let error;
+
+      if (checkError && checkError.code === 'PGRST116') {
+        const { error: insertError } = await supabase
+          .from('site_settings')
+          .insert({
+            id: 'coa_official_link',
+            value: officialCoaLinkDraft,
+            type: 'string',
+            description: 'Official COA verification link for customer page',
+            updated_at: new Date().toISOString()
+          });
+        error = insertError;
+      } else if (checkError) {
+        throw checkError;
+      } else {
+        const { error: updateError } = await supabase
+          .from('site_settings')
+          .update({
+            value: officialCoaLinkDraft,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', 'coa_official_link');
+        error = updateError;
+      }
+
+      if (error) throw error;
+
+      setOfficialCoaLink(officialCoaLinkDraft);
+      alert('✅ Official COA link saved successfully!');
+    } catch (error: any) {
+      console.error('Error saving official COA link:', error);
+      alert(`❌ Failed to save COA link: ${error?.message || 'Unknown error'}`);
+    } finally {
+      setOfficialCoaLinkSaving(false);
     }
   };
 
@@ -351,6 +419,43 @@ const COAManager: React.FC<COAManagerProps> = ({ onBack }) => {
             Add COA Report
           </button>
         </div>
+      </div>
+
+      {/* Official COA Link Field */}
+      <div className="bg-white border border-navy-700/30 rounded-lg p-4 shadow-sm">
+        <div className="flex items-center gap-2 mb-2">
+          <Link className="w-5 h-5 text-gold-600" />
+          <span className="text-sm font-semibold text-gray-700">Official COA Verification Link</span>
+        </div>
+        <p className="text-xs text-gray-500 mb-3">
+          Paste the official COA link here. A "Verify COA" button will appear on the customer page.
+        </p>
+        <div className="flex items-center gap-2">
+          <input
+            type="url"
+            value={officialCoaLinkDraft}
+            onChange={(e) => setOfficialCoaLinkDraft(e.target.value)}
+            className="input-field flex-1 text-sm"
+            placeholder="https://example.com/coa-verification"
+          />
+          <button
+            onClick={saveOfficialCoaLink}
+            disabled={officialCoaLinkSaving || officialCoaLinkDraft === officialCoaLink}
+            className="flex items-center gap-1.5 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 disabled:opacity-50 disabled:cursor-not-allowed text-black px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-md whitespace-nowrap"
+          >
+            <Save className="w-4 h-4" />
+            {officialCoaLinkSaving ? 'Saving...' : 'Save Link'}
+          </button>
+        </div>
+        {officialCoaLink && (
+          <div className="mt-2 flex items-center gap-1.5 text-xs text-green-600">
+            <ExternalLink className="w-3.5 h-3.5" />
+            <span>Current link:</span>
+            <a href={officialCoaLink} target="_blank" rel="noopener noreferrer" className="underline truncate max-w-xs">
+              {officialCoaLink}
+            </a>
+          </div>
+        )}
       </div>
 
       {/* Add/Edit Form */}

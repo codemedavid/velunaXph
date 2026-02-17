@@ -10,9 +10,10 @@ interface CheckoutProps {
   cartItems: CartItem[];
   totalPrice: number;
   onBack: () => void;
+  clearCart: () => void;
 }
 
-const Checkout: React.FC<CheckoutProps> = ({ cartItems, totalPrice, onBack }) => {
+const Checkout: React.FC<CheckoutProps> = ({ cartItems, totalPrice, onBack, clearCart }) => {
   const { paymentMethods } = usePaymentMethods();
   const { locations: shippingLocations, getShippingFee } = useShippingLocations();
   const [step, setStep] = useState<'details' | 'payment' | 'confirmation'>('details');
@@ -344,9 +345,9 @@ Please confirm this order. Thank you!
       }
 
       // Open contact method based on selection
-      // Using wa.me link to open WhatsApp directly
+      // Using wa.me link to open WhatsApp with pre-filled order message
       const contactUrl = contactMethod === 'whatsapp'
-        ? `https://api.whatsapp.com/send?phone=639778132630`
+        ? `https://api.whatsapp.com/send?phone=639778132630&text=${encodeURIComponent(orderDetails)}`
         : null;
 
       if (contactUrl) {
@@ -366,6 +367,9 @@ Please confirm this order. Thank you!
           }
         }, 500);
       }
+
+      // Clear the cart after successful order
+      clearCart();
 
       // Show confirmation
       setStep('confirmation');
@@ -402,7 +406,7 @@ Please confirm this order. Thank you!
 
   const handleOpenContact = () => {
     const contactUrl = contactMethod === 'whatsapp'
-      ? `https://api.whatsapp.com/send?phone=639778132630`
+      ? `https://api.whatsapp.com/send?phone=639778132630&text=${encodeURIComponent(orderMessage)}`
       : null;
 
     if (contactUrl) {

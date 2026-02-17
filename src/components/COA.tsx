@@ -21,10 +21,27 @@ const COA: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [coaReports, setCOAReports] = useState<COAReport[]>([]);
   const [loading, setLoading] = useState(true);
+  const [officialCoaLink, setOfficialCoaLink] = useState<string>('');
 
   useEffect(() => {
     fetchCOAReports();
+    fetchOfficialCoaLink();
   }, []);
+
+  const fetchOfficialCoaLink = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('site_settings')
+        .select('value')
+        .eq('id', 'coa_official_link')
+        .single();
+
+      if (error && error.code !== 'PGRST116') throw error;
+      setOfficialCoaLink(data?.value || '');
+    } catch (error) {
+      console.error('Error fetching official COA link:', error);
+    }
+  };
 
   const fetchCOAReports = async () => {
     try {
@@ -127,6 +144,7 @@ const COA: React.FC = () => {
                 <span className="font-medium text-gray-700">Verified</span>
               </div>
             </div>
+
           </div>
         </div>
       </div>
@@ -197,27 +215,36 @@ const COA: React.FC = () => {
                       <span className="text-xs md:text-sm text-gray-600 font-medium">Task:</span>
                       <span className="text-xs md:text-sm text-gray-800 font-mono">{report.task_number}</span>
                     </div>
+                    {report.verification_key && (
+                      <div className="flex items-center justify-between py-1.5 md:py-2 border-b border-sky-100">
+                        <span className="text-xs md:text-sm text-gray-600 font-medium">Unique Key:</span>
+                        <span className="text-xs md:text-sm text-gray-800 font-mono">{report.verification_key}</span>
+                      </div>
+                    )}
                   </div>
 
                   <div className="space-y-2 md:space-y-3">
                     {(() => {
-                      const isJanoshik = !report.laboratory || report.laboratory.toLowerCase().includes('janoshik');
-                      const verificationUrl = isJanoshik
-                        ? `https://www.janoshik.com/verify/?key=${report.verification_key}`
-                        : 'https://chromate.org';
+                      const verifyUrl = officialCoaLink
+                        ? officialCoaLink
+                        : (!report.laboratory || report.laboratory.toLowerCase().includes('janoshik'))
+                          ? `https://www.janoshik.com/verify/?key=${report.verification_key}`
+                          : 'https://chromate.org';
+                      const verifyLabel = officialCoaLink
+                        ? 'Verify Official COA'
+                        : (!report.laboratory || report.laboratory.toLowerCase().includes('janoshik'))
+                          ? 'Verify on Janoshik'
+                          : 'Verify on Chromate';
 
                       return (
                         <a
-                          href={verificationUrl}
+                          href={verifyUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className={`w-full flex items-center justify-center gap-1.5 md:gap-2 text-white px-3 py-2 md:px-4 md:py-3 rounded-xl md:rounded-2xl text-sm md:text-base font-medium transition-all duration-300 shadow-lg hover:shadow-xl ${isJanoshik
-                            ? 'bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-500 hover:to-sky-600'
-                            : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600'
-                            }`}
+                          className="w-full flex items-center justify-center gap-1.5 md:gap-2 text-white px-3 py-2 md:px-4 md:py-3 rounded-xl md:rounded-2xl text-sm md:text-base font-medium transition-all duration-300 shadow-lg hover:shadow-xl bg-gradient-to-r from-sky-400 to-sky-500 hover:from-sky-500 hover:to-sky-600"
                         >
                           <Shield className="w-4 h-4 md:w-5 md:h-5" />
-                          {isJanoshik ? 'Verify on Janoshik' : 'Verify on Chromate'}
+                          {verifyLabel}
                         </a>
                       );
                     })()}
